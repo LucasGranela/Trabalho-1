@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "arquivos.h"
+#include "funcoes-fornecidas/fornecido.h"
+
 int main (){
     /*
     * O programa possui 5 tipos de entrada: 
@@ -23,6 +26,7 @@ int main (){
     {
     case 1:
         /* code */
+        printarTeste();
         break;
     case 2:
         /* code */
