@@ -1,1 +1,1 @@
-/bin/gcc -g  -rdynamic CMakeFiles/trabalho1.dir/main.c.o CMakeFiles/trabalho1.dir/arquivos.c.o CMakeFiles/trabalho1.dir/funcoes-fornecidas/fornecido.c.o  -o trabalho1 
+/bin/gcc -g  -rdynamic CMakeFiles/trabalho1.dir/main.c.o CMakeFiles/trabalho1.dir/arquivos.c.o CMakeFiles/trabalho1.dir/funcoes-fornecidas/fornecido.c.o CMakeFiles/trabalho1.dir/arqIndicePessoa.c.o  -o trabalho1 

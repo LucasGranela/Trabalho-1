@@ -20,12 +20,12 @@ int main (){
 
     int caso;
     
-    scanf("%d", &caso);
+    scanf("%.1d", &caso);
 
     switch (caso)
     {
     case 1:
-        printarTeste();
+        
         break;
     case 2:
         /* code */

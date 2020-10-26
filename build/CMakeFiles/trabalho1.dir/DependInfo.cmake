@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
+  "/home/lucas.granela/Documents/ED3/Trabalho 1/arqIndicePessoa.c" "/home/lucas.granela/Documents/ED3/Trabalho 1/build/CMakeFiles/trabalho1.dir/arqIndicePessoa.c.o"
   "/home/lucas.granela/Documents/ED3/Trabalho 1/arquivos.c" "/home/lucas.granela/Documents/ED3/Trabalho 1/build/CMakeFiles/trabalho1.dir/arquivos.c.o"
   "/home/lucas.granela/Documents/ED3/Trabalho 1/funcoes-fornecidas/fornecido.c" "/home/lucas.granela/Documents/ED3/Trabalho 1/build/CMakeFiles/trabalho1.dir/funcoes-fornecidas/fornecido.c.o"
   "/home/lucas.granela/Documents/ED3/Trabalho 1/main.c" "/home/lucas.granela/Documents/ED3/Trabalho 1/build/CMakeFiles/trabalho1.dir/main.c.o"

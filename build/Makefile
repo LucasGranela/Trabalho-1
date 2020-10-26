@@ -540,6 +540,33 @@ ContinuousConfigure/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ContinuousConfigure.dir/build.make CMakeFiles/ContinuousConfigure.dir/build
 .PHONY : ContinuousConfigure/fast
 
+arqIndicePessoa.o: arqIndicePessoa.c.o
+
+.PHONY : arqIndicePessoa.o
+
+# target to build an object file
+arqIndicePessoa.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/trabalho1.dir/build.make CMakeFiles/trabalho1.dir/arqIndicePessoa.c.o
+.PHONY : arqIndicePessoa.c.o
+
+arqIndicePessoa.i: arqIndicePessoa.c.i
+
+.PHONY : arqIndicePessoa.i
+
+# target to preprocess a source file
+arqIndicePessoa.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/trabalho1.dir/build.make CMakeFiles/trabalho1.dir/arqIndicePessoa.c.i
+.PHONY : arqIndicePessoa.c.i
+
+arqIndicePessoa.s: arqIndicePessoa.c.s
+
+.PHONY : arqIndicePessoa.s
+
+# target to generate assembly for a file
+arqIndicePessoa.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/trabalho1.dir/build.make CMakeFiles/trabalho1.dir/arqIndicePessoa.c.s
+.PHONY : arqIndicePessoa.c.s
+
 arquivos.o: arquivos.c.o
 
 .PHONY : arquivos.o
@@ -661,6 +688,9 @@ help:
 	@echo "... NightlyTest"
 	@echo "... NightlyUpdate"
 	@echo "... trabalho1"
+	@echo "... arqIndicePessoa.o"
+	@echo "... arqIndicePessoa.i"
+	@echo "... arqIndicePessoa.s"
 	@echo "... arquivos.o"
 	@echo "... arquivos.i"
 	@echo "... arquivos.s"
