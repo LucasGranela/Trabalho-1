@@ -4,6 +4,9 @@
 CMakeFiles/trabalho1.dir/arquivos.c.o: ../arquivos.c
 CMakeFiles/trabalho1.dir/arquivos.c.o: ../arquivos.h
 
+CMakeFiles/trabalho1.dir/funcoes-fornecidas/fornecido.c.o: ../funcoes-fornecidas/fornecido.c
+
 CMakeFiles/trabalho1.dir/main.c.o: ../arquivos.h
+CMakeFiles/trabalho1.dir/main.c.o: ../funcoes-fornecidas/fornecido.h
 CMakeFiles/trabalho1.dir/main.c.o: ../main.c
 

@@ -6,15 +6,23 @@
 
 #IncludeRegexTransform: 
 
-/home/lucas.granela/Documents/ED3/Trabalho 1/arquivos.c
-arquivos.h
-/home/lucas.granela/Documents/ED3/Trabalho 1/arquivos.h
-
 /home/lucas.granela/Documents/ED3/Trabalho 1/arquivos.h
 stdlib.h
 -
 stdio.h
 -
+
+/home/lucas.granela/Documents/ED3/Trabalho 1/funcoes-fornecidas/fornecido.c
+stdlib.h
+-
+string.h
+-
+stdio.h
+-
+ctype.h
+-
+
+/home/lucas.granela/Documents/ED3/Trabalho 1/funcoes-fornecidas/fornecido.h
 
 /home/lucas.granela/Documents/ED3/Trabalho 1/main.c
 stdio.h
@@ -23,4 +31,6 @@ stdlib.h
 -
 arquivos.h
 /home/lucas.granela/Documents/ED3/Trabalho 1/arquivos.h
+funcoes-fornecidas/fornecido.h
+/home/lucas.granela/Documents/ED3/Trabalho 1/funcoes-fornecidas/fornecido.h
 
