@@ -1,0 +1,1 @@
+/bin/gcc -g  -rdynamic CMakeFiles/trabalho1.dir/main.c.o CMakeFiles/trabalho1.dir/arquivos.c.o  -o trabalho1 

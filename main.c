@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #include "arquivos.h"
-#include "funcoes-fornecidas/fornecido.h"
+//#include "funcoes-fornecidas/fornecido.h"
 
 int main (){
     /*
