@@ -32,6 +32,8 @@ int main (){
         char arqPessoa[50];
         char arqIndPessoa[50];
         
+        int i;
+
         //leitura dos arquivos a serem lidos
         scanf("%[^ ]%*c", nomeArquivolido);
         scanf("%[^ ]%*c", arqPessoa);
@@ -39,7 +41,7 @@ int main (){
 
         //pelo arquivo csv poder ser muito grande, sera necessario ler um por um e salvando no arquivo Pessoas
         
-        FILE* arquivoEntrada = fopen("caso3.csv", "r"); //abrindo arquivo de entrada de dados
+        FILE* arquivoEntrada = fopen(nomeArquivolido, "r"); //abrindo arquivo de entrada de dados
         FILE* arquivoPessoa = fopen(arqPessoa, "wb");   //abrindo o arquivo que serao salvados os dados
 
         if(arquivoPessoa == NULL || arquivoEntrada == NULL){ //verificando se os arquivos foram corretamente abertos
@@ -52,25 +54,27 @@ int main (){
         fseek(arquivoPessoa, 0, SEEK_SET); //posicionando a escrita para escrever o cabecalho
         
         //como o fwrite pede um ponteiro foi necessario criar vetores de uma posicao
-        char cabecalho[1] = {'0'};
+        char cabStatus1[1] = {'0'};
+        char cablixo1[59];
+        for(i = 0; i < 59; i++)
+            cablixo1[i] = '$';
         int cab[1] = {0};
 
         //escrevendo o cabecalho
-        fwrite(cabecalho, sizeof(char), 1, arquivoPessoa);
+        fwrite(cabStatus1, sizeof(char), 1, arquivoPessoa);
         fwrite(cab, sizeof(int), 1, arquivoPessoa);
-        cabecalho[1] = '$';
-        fwrite(cabecalho, sizeof(char), 59, arquivoPessoa);
+        fwrite(cablixo1, sizeof(char), 59, arquivoPessoa);
 
         //variaveis para leitura e escrita das variaveis
         char nomePessoa[60];
         char twitterPessoa[40];
-        char removido[1] = {1};
+        char removido[1] = {'1'};
         int idPessoa[1], idadePessoa[1];
         int quantPessoas[1];
 
         quantPessoas[0] = 0;
 
-        int i;
+        
 
         //lista dinamica para criar o arquivo .index
         Lista* li = cria_lista();
@@ -81,7 +85,7 @@ int main (){
             if(fscanf(arquivoEntrada, "%[^,]", nomePessoa) < 1)  //verifica se o nome e' nulo
                 nomePessoa[0] = '\0'; //se for nulo setta como tal 
                 
-            fscanf(arquivoEntrada, "%*c%d%*c%[^\n]", idadePessoa, twitterPessoa); //leitura do resto dos dados
+            fscanf(arquivoEntrada, "%*c%d%*c%[^\r]", idadePessoa, twitterPessoa); //leitura do resto dos dados
             quantPessoas[0] ++; //incrementacao da quantidade de pessoas total para atualizar o cabecalho no final do codigo
 
             int strFinal = 0; // quando for o final da string ele fica um 
@@ -131,11 +135,14 @@ int main (){
         }
 
         //criacao do cabecalho
-        cabecalho[0] = '0';
+        char cabStatus2[1] = {'0'};
+        char cablixo2[7];
+        for(i = 0; i < 7; i++)
+            cablixo2[i] = '$';
+
         fseek(arqIndex, 0, SEEK_SET);
-        fwrite(cabecalho, 1, 1, arqIndex); //status
-        cabecalho[0] = '$';
-        fwrite(cabecalho, 1, 7, arqIndex); //lixo
+        fwrite(cabStatus2, 1, 1, arqIndex); //status
+        fwrite(cablixo2, 1, 7, arqIndex); //lixo
 
         for(i = 1; i <= quantPessoas[0]; i++){
             consulta_lista_pos(li, i, &id, &RRN); //id e RRN vao ficar com os valores corretos
@@ -148,11 +155,11 @@ int main (){
         fwrite(quantPessoas, 4, 1, arquivoPessoa);
 
         //apos modificado todo o arquivo setta o status do cabecalho para 1 novamente para dizer que ele esta finalizado e consistente
-        cabecalho[1] = '1';
+        cabStatus1[0] = '1';
         fseek(arquivoPessoa, 0, SEEK_SET); //cabecalho do arquivo Pessoa
-        fwrite(cabecalho, 1, 1, arquivoPessoa);
+        fwrite(cabStatus1, 1, 1, arquivoPessoa);
         fseek(arqIndex, 0, SEEK_SET); //cabecalho do arquivo IndexaPessoa
-        fwrite(cabecalho, 1, 1, arqIndex);
+        fwrite(cabStatus1, 1, 1, arqIndex);
 
 
         //lebera todos os ponteiros criados dinamicamente
