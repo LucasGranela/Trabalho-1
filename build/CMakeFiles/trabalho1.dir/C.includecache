@@ -6,21 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/lucas.granela/Documents/ED3/Trabalho 1/arquivos.h
-stdlib.h
--
-stdio.h
--
-
-/home/lucas.granela/Documents/ED3/Trabalho 1/funcoes-fornecidas/fornecido.c
-stdlib.h
--
-string.h
--
-stdio.h
--
-ctype.h
--
+/home/lucas.granela/Documents/ED3/Trabalho 1/arqIndicePessoa.h
 
 /home/lucas.granela/Documents/ED3/Trabalho 1/funcoes-fornecidas/fornecido.h
 
@@ -29,8 +15,8 @@ stdio.h
 -
 stdlib.h
 -
-arquivos.h
-/home/lucas.granela/Documents/ED3/Trabalho 1/arquivos.h
+arqIndicePessoa.h
+/home/lucas.granela/Documents/ED3/Trabalho 1/arqIndicePessoa.h
 funcoes-fornecidas/fornecido.h
 /home/lucas.granela/Documents/ED3/Trabalho 1/funcoes-fornecidas/fornecido.h
 

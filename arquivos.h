@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-    void printarTeste();
+    FILE* abrirArquivo(char nomearquivo[50], char modo[50]);
+    void fechaArquivo(FILE* arquivo);
 
 #endif

@@ -7,12 +7,10 @@
 #define OK         1
 #define ERRO       0
 
-
-typedef int Tipo_Dado;
-
 struct elemento{
     struct elemento *ant;
-    Tipo_Dado dado;
+    int idPessoa;
+    int RRN;
     struct elemento *prox;
 };
 
@@ -21,10 +19,11 @@ typedef struct elemento* Lista;
 
 Lista* cria_lista();
 void libera_lista(Lista* li);
-int consulta_lista_pos(Lista* li, int pos, Tipo_Dado *dt);
-int consulta_lista_dado(Lista* li, Tipo_Dado dt, Elem **el);
-int insere_lista_final(Lista* li, Tipo_Dado dt);
-int remove_lista(Lista* li, Tipo_Dado dt);
+int consulta_lista_pos(Lista* li, int pos, int *id, int *rrn );
+int consulta_lista_dado(Lista* li, int dt, Elem **el);
+int insere_lista_final(Lista* li, int dt);
+int insere_lista_ordenada(Lista* li, int rrn, int id);
+int remove_lista(Lista* li, int dt);
 int tamanho_lista(Lista* li);
 void imprime_lista(Lista* li);
 
