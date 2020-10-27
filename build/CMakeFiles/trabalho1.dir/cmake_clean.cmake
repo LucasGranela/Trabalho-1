@@ -1,6 +1,5 @@
 file(REMOVE_RECURSE
   "CMakeFiles/trabalho1.dir/arqIndicePessoa.c.o"
-  "CMakeFiles/trabalho1.dir/arquivos.c.o"
   "CMakeFiles/trabalho1.dir/funcoes-fornecidas/fornecido.c.o"
   "CMakeFiles/trabalho1.dir/main.c.o"
   "trabalho1"

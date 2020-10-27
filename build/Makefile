@@ -567,33 +567,6 @@ arqIndicePessoa.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/trabalho1.dir/build.make CMakeFiles/trabalho1.dir/arqIndicePessoa.c.s
 .PHONY : arqIndicePessoa.c.s
 
-arquivos.o: arquivos.c.o
-
-.PHONY : arquivos.o
-
-# target to build an object file
-arquivos.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/trabalho1.dir/build.make CMakeFiles/trabalho1.dir/arquivos.c.o
-.PHONY : arquivos.c.o
-
-arquivos.i: arquivos.c.i
-
-.PHONY : arquivos.i
-
-# target to preprocess a source file
-arquivos.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/trabalho1.dir/build.make CMakeFiles/trabalho1.dir/arquivos.c.i
-.PHONY : arquivos.c.i
-
-arquivos.s: arquivos.c.s
-
-.PHONY : arquivos.s
-
-# target to generate assembly for a file
-arquivos.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/trabalho1.dir/build.make CMakeFiles/trabalho1.dir/arquivos.c.s
-.PHONY : arquivos.c.s
-
 funcoes-fornecidas/fornecido.o: funcoes-fornecidas/fornecido.c.o
 
 .PHONY : funcoes-fornecidas/fornecido.o
@@ -691,9 +664,6 @@ help:
 	@echo "... arqIndicePessoa.o"
 	@echo "... arqIndicePessoa.i"
 	@echo "... arqIndicePessoa.s"
-	@echo "... arquivos.o"
-	@echo "... arquivos.i"
-	@echo "... arquivos.s"
 	@echo "... funcoes-fornecidas/fornecido.o"
 	@echo "... funcoes-fornecidas/fornecido.i"
 	@echo "... funcoes-fornecidas/fornecido.s"

@@ -4,9 +4,6 @@
 CMakeFiles/trabalho1.dir/arqIndicePessoa.c.o: ../arqIndicePessoa.c
 CMakeFiles/trabalho1.dir/arqIndicePessoa.c.o: ../arqIndicePessoa.h
 
-CMakeFiles/trabalho1.dir/arquivos.c.o: ../arquivos.c
-CMakeFiles/trabalho1.dir/arquivos.c.o: ../arquivos.h
-
 CMakeFiles/trabalho1.dir/funcoes-fornecidas/fornecido.c.o: ../funcoes-fornecidas/fornecido.c
 
 CMakeFiles/trabalho1.dir/main.c.o: ../arqIndicePessoa.h

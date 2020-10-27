@@ -21,7 +21,7 @@ int main (){
 
     int caso;
     
-    scanf("%d ", &caso);
+    scanf("%d%*c", &caso);
     
     //TENTEI FAZER COM SWITCH CASE, MAS DEU 
     //"a label can only be part of a statement and a declaration is not a statement"
@@ -73,8 +73,6 @@ int main (){
         int quantPessoas[1];
 
         quantPessoas[0] = 0;
-
-        
 
         //lista dinamica para criar o arquivo .index
         Lista* li = cria_lista();
@@ -171,7 +169,78 @@ int main (){
         //funcao de coleta para verificacao do codigo
         binarioNaTela1(arqPessoa,arqIndPessoa);
     } else if (caso == 2) {
-        
+        //leitura do arq binario que sera usado 
+        char nomeArqlido[50];
+        scanf("%s", nomeArqlido);
+        int i; //utilizacao em for
+
+        FILE* arqBin = fopen(nomeArqlido, "rb");
+        if(arqBin == NULL){ //verifica se o programa conseguiu abrir
+            printf("Falha no carregamento do arquivo.\n");
+            return 0;
+        }
+
+        //leitura do status para verificar se o arquivo esta consistente para continuar o codigo
+        char status[1];
+        fseek(arqBin, 0, SEEK_SET);
+        fread(status, sizeof(char), 1, arqBin);
+
+        if(status[0] == '0'){
+            printf("Falha no carregamento do arquivo.\n");
+            return 0;
+        }
+
+        //leitura e armazenamento da quantidade de dados que o arquivo possui
+        int quant_dados[1];
+        fread(quant_dados, sizeof(int), 1, arqBin);
+
+        //posiciona a leitura para depois do cabecalho
+        fseek(arqBin, 64, SEEK_SET);
+
+        //variaveis do arquivo
+        int idPessoa[1];
+        char nomePessoa[40];
+        int idadePessoa[1];
+        char twitterPessoa[15];
+
+        //variavel para saber se o arquivo possui algum dado
+        int quantEscritos = 0; 
+
+        for(i = 0; i <= quant_dados[0]; i++){
+            fread(status, sizeof(char), 1, arqBin);
+            if(status[0] == '0') //arquivo logicamente removido
+                fseek(arqBin, 63, SEEK_CUR); //pula ponteiro para proximo dado
+            else {
+                //leitura dos dados do registro existente
+                fread(idPessoa, sizeof(int), 1, arqBin);
+                fread(nomePessoa, sizeof(char), 40, arqBin);
+                fread(idadePessoa, sizeof(int), 1, arqBin);
+                fread(twitterPessoa, sizeof(char), 15, arqBin);
+
+                printf("Dados da pessoa de código %d\n", idPessoa[0]);
+
+                if(nomePessoa[0] != '\0')
+                    printf("Nome: %s\n", nomePessoa);
+                else
+                    printf("Nome: -\n");              
+
+                if(idadePessoa[0] != -1)
+                    printf("Idade: %d anos\n", idadePessoa[0]);
+                else
+                    printf("Idade: -\n");
+
+                printf("Twitter: %s\n", twitterPessoa);
+                
+                quantEscritos++;
+            }
+            if(quantEscritos != 0)
+                printf("\n");
+        }
+
+        if(quantEscritos == 0)
+            printf("Registro inexistente.\n");
+
+        fclose(arqBin);
     } else if (caso == 3) {
 
     } else if (caso == 4) {

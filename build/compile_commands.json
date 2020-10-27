@@ -6,11 +6,6 @@
 },
 {
   "directory": "/home/lucas.granela/Documents/ED3/Trabalho 1/build",
-  "command": "/bin/gcc   -g   -o CMakeFiles/trabalho1.dir/arquivos.c.o   -c \"/home/lucas.granela/Documents/ED3/Trabalho 1/arquivos.c\"",
-  "file": "/home/lucas.granela/Documents/ED3/Trabalho 1/arquivos.c"
-},
-{
-  "directory": "/home/lucas.granela/Documents/ED3/Trabalho 1/build",
   "command": "/bin/gcc   -g   -o CMakeFiles/trabalho1.dir/funcoes-fornecidas/fornecido.c.o   -c \"/home/lucas.granela/Documents/ED3/Trabalho 1/funcoes-fornecidas/fornecido.c\"",
   "file": "/home/lucas.granela/Documents/ED3/Trabalho 1/funcoes-fornecidas/fornecido.c"
 },
