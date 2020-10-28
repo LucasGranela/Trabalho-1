@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "arqIndicePessoa.h"
 #include "funcoes-fornecidas/fornecido.h"
@@ -54,25 +55,25 @@ int main (){
         fseek(arquivoPessoa, 0, SEEK_SET); //posicionando a escrita para escrever o cabecalho
         
         //como o fwrite pede um ponteiro foi necessario criar vetores de uma posicao
-        char cabStatus1[1] = {'0'};
+        char cabStatus1 = '0';
         char cablixo1[59];
         for(i = 0; i < 59; i++)
             cablixo1[i] = '$';
-        int cab[1] = {0};
+        int cab = 0;
 
         //escrevendo o cabecalho
-        fwrite(cabStatus1, sizeof(char), 1, arquivoPessoa);
-        fwrite(cab, sizeof(int), 1, arquivoPessoa);
+        fwrite(&cabStatus1, sizeof(char), 1, arquivoPessoa);
+        fwrite(&cab, sizeof(int), 1, arquivoPessoa);
         fwrite(cablixo1, sizeof(char), 59, arquivoPessoa);
 
         //variaveis para leitura e escrita das variaveis
         char nomePessoa[60];
         char twitterPessoa[40];
-        char removido[1] = {'1'};
-        int idPessoa[1], idadePessoa[1];
-        int quantPessoas[1];
+        char removido = '1';
+        int idPessoa, idadePessoa;
+        int quantPessoas;
 
-        quantPessoas[0] = 0;
+        quantPessoas = 0;
 
         //lista dinamica para criar o arquivo .index
         Lista* li = cria_lista();
@@ -84,7 +85,7 @@ int main (){
                 nomePessoa[0] = '\0'; //se for nulo setta como tal 
                 
             fscanf(arquivoEntrada, "%*c%d%*c%[^\r]", idadePessoa, twitterPessoa); //leitura do resto dos dados
-            quantPessoas[0] ++; //incrementacao da quantidade de pessoas total para atualizar o cabecalho no final do codigo
+            quantPessoas++; //incrementacao da quantidade de pessoas total para atualizar o cabecalho no final do codigo
 
             int strFinal = 0; // quando for o final da string ele fica um 
             for(i = 0; i < 60; i++){ //funcao para identificar e settar o lixo
@@ -113,15 +114,15 @@ int main (){
             }
 
             //aqui escreve todos os dados no arquivoPessoa.bin 
-            fwrite(removido, sizeof(char), 1, arquivoPessoa);
-            fwrite(idPessoa, 4, 1, arquivoPessoa);
+            fwrite(&removido, sizeof(char), 1, arquivoPessoa);
+            fwrite(&idPessoa, 4, 1, arquivoPessoa);
             fwrite(nomePessoa, sizeof(char), 40, arquivoPessoa);
-            fwrite(idadePessoa, 4, 1, arquivoPessoa);
+            fwrite(&idadePessoa, 4, 1, arquivoPessoa);
             fwrite(twitterPessoa, sizeof(char), 15, arquivoPessoa);
 
             //cria a lista dinamicamente ordenada dos index
-            RRN = quantPessoas[0] - 1;
-            id = idPessoa[0];
+            RRN = quantPessoas - 1;
+            id = idPessoa;
             insere_lista_ordenada(li, RRN, id);
         }
 
@@ -133,16 +134,16 @@ int main (){
         }
 
         //criacao do cabecalho
-        char cabStatus2[1] = {'0'};
+        char cabStatus2 = '0';
         char cablixo2[7];
         for(i = 0; i < 7; i++)
             cablixo2[i] = '$';
 
         fseek(arqIndex, 0, SEEK_SET);
-        fwrite(cabStatus2, 1, 1, arqIndex); //status
+        fwrite(&cabStatus2, 1, 1, arqIndex); //status
         fwrite(cablixo2, 1, 7, arqIndex); //lixo
 
-        for(i = 1; i <= quantPessoas[0]; i++){
+        for(i = 1; i <= quantPessoas; i++){
             consulta_lista_pos(li, i, &id, &RRN); //id e RRN vao ficar com os valores corretos
             fwrite(&id, sizeof(int), 1, arqIndex);
             fwrite(&RRN, sizeof(int), 1, arqIndex);
@@ -150,14 +151,14 @@ int main (){
 
         //setta no cabecalho a quantidade de pessoas total do arquivo
         fseek(arquivoPessoa, 1, SEEK_SET);
-        fwrite(quantPessoas, 4, 1, arquivoPessoa);
+        fwrite(&quantPessoas, 4, 1, arquivoPessoa);
 
         //apos modificado todo o arquivo setta o status do cabecalho para 1 novamente para dizer que ele esta finalizado e consistente
-        cabStatus1[0] = '1';
+        cabStatus1 = '1';
         fseek(arquivoPessoa, 0, SEEK_SET); //cabecalho do arquivo Pessoa
-        fwrite(cabStatus1, 1, 1, arquivoPessoa);
+        fwrite(&cabStatus1, 1, 1, arquivoPessoa);
         fseek(arqIndex, 0, SEEK_SET); //cabecalho do arquivo IndexaPessoa
-        fwrite(cabStatus1, 1, 1, arqIndex);
+        fwrite(&cabStatus1, 1, 1, arqIndex);
 
 
         //lebera todos os ponteiros criados dinamicamente
@@ -181,51 +182,52 @@ int main (){
         }
 
         //leitura do status para verificar se o arquivo esta consistente para continuar o codigo
-        char status[1];
+        char status;
         fseek(arqBin, 0, SEEK_SET);
-        fread(status, sizeof(char), 1, arqBin);
+        fread(&status, sizeof(char), 1, arqBin);
 
-        if(status[0] == '0'){
+        if(status == '0'){
             printf("Falha no carregamento do arquivo.\n");
+            fclose(arqBin);
             return 0;
         }
 
         //leitura e armazenamento da quantidade de dados que o arquivo possui
-        int quant_dados[1];
-        fread(quant_dados, sizeof(int), 1, arqBin);
+        int quant_dados;
+        fread(&quant_dados, sizeof(int), 1, arqBin);
 
         //posiciona a leitura para depois do cabecalho
         fseek(arqBin, 64, SEEK_SET);
 
         //variaveis do arquivo
-        int idPessoa[1];
+        int idPessoa;
         char nomePessoa[40];
-        int idadePessoa[1];
+        int idadePessoa;
         char twitterPessoa[15];
 
         //variavel para saber se o arquivo possui algum dado
         int quantEscritos = 0; 
 
-        for(i = 0; i <= quant_dados[0]; i++){
-            fread(status, sizeof(char), 1, arqBin);
-            if(status[0] == '0') //arquivo logicamente removido
+        for(i = 0; i <= quant_dados; i++){
+            fread(&status, sizeof(char), 1, arqBin);
+            if(status == '0') //arquivo logicamente removido
                 fseek(arqBin, 63, SEEK_CUR); //pula ponteiro para proximo dado
             else {
                 //leitura dos dados do registro existente
-                fread(idPessoa, sizeof(int), 1, arqBin);
+                fread(&idPessoa, sizeof(int), 1, arqBin);
                 fread(nomePessoa, sizeof(char), 40, arqBin);
-                fread(idadePessoa, sizeof(int), 1, arqBin);
+                fread(&idadePessoa, sizeof(int), 1, arqBin);
                 fread(twitterPessoa, sizeof(char), 15, arqBin);
 
-                printf("Dados da pessoa de código %d\n", idPessoa[0]);
+                printf("Dados da pessoa de código %d\n", idPessoa);
 
                 if(nomePessoa[0] != '\0')
                     printf("Nome: %s\n", nomePessoa);
                 else
                     printf("Nome: -\n");              
 
-                if(idadePessoa[0] != -1)
-                    printf("Idade: %d anos\n", idadePessoa[0]);
+                if(idadePessoa != -1)
+                    printf("Idade: %d anos\n", idadePessoa);
                 else
                     printf("Idade: -\n");
 
@@ -241,7 +243,94 @@ int main (){
             printf("Registro inexistente.\n");
 
         fclose(arqBin);
+
     } else if (caso == 3) {
+        //variaveis dos arquivos e o campo a ser utilizado
+        char nomeArqPessoa[50];
+        char nomeArqIndex[50];
+        char campo[15]; //idPessoa,nomePessoa,idadePessoa ou twitterPessoa
+
+        //leitura das variaveis 
+        scanf("%[^ ]%*c", nomeArqPessoa);
+        scanf("%[^ ]%*c", nomeArqIndex);
+        scanf("%[^ ]%*c", campo);
+
+        //vai abrir os dois arquivos necessarios e verificar se eles estao de acordo com o necessario
+        FILE* arquivoPessoa = fopen(nomeArqPessoa, "rb");
+        FILE* arquivoIndexaPessoa = fopen(nomeArqIndex, "rb");
+
+        //verifica se existe um arquivo e se ele abre corretamente
+        if(arquivoPessoa == NULL || arquivoIndexaPessoa == NULL){
+            printf("Falha no carregamento do arquivo.\n");
+            return 0;
+        }
+
+        //verifica se o arquivo esta consistente para ser lido
+        char statusPessoa;
+        char statusIndexaPessoa;
+        fseek(arquivoPessoa, 0, SEEK_SET);
+        fread(&statusPessoa, sizeof(char), 1, arquivoPessoa);
+        fseek(arquivoIndexaPessoa, 0, SEEK_SET);
+        fread(&statusIndexaPessoa, sizeof(char), 1, arquivoIndexaPessoa);
+
+        //fecha os arquivos antes do encerramento do programa
+        if(statusPessoa == '0' || statusIndexaPessoa == '0'){
+            printf("Falha no carregamento do arquivo.\n");
+            fclose(arquivoIndexaPessoa);
+            fclose(arquivoPessoa);
+            return 0;
+        }
+
+        //de novo, queria usar o switch case, mas parece que o compilador nao compila direito entao fiz com if else
+        if(strcmp(campo, "idPessoa") == 0) {//verifica se o campo escolhido e' o do idPessoa
+            int valor; //verifica o id requerido para encontrar o campo 
+            scanf("%d", &valor);
+
+            int RRN;
+            //posiciona o ponteiro do arquivo no id requerido para buscar o RRN certo
+            fseek(arquivoIndexaPessoa, ((valor*8) + 4), SEEK_SET);
+            fread(&RRN, sizeof(int), 1, arquivoIndexaPessoa);
+            
+            //posiciona o ponteiro no arquivo pessoa atraves do RRN obtido para achar os dados corretos
+            fseek(arquivoPessoa, ((RRN+1)*64), SEEK_SET);
+
+            //variaveis do arquivo
+            char status;
+            int idPessoa;
+            char nomePessoa[40];
+            int idadePessoa;
+            char twitterPessoa[15];
+
+            fread(&status, sizeof(char), 1, arquivoPessoa);
+            if(status == '0') //arquivo logicamente removido
+                printf("Registro inexistente.\n");
+            else {
+                //leitura dos dados do registro existente
+                fread(&idPessoa, sizeof(int), 1, arquivoPessoa);
+                fread(nomePessoa, sizeof(char), 40, arquivoPessoa);
+                fread(&idadePessoa, sizeof(int), 1, arquivoPessoa);
+                fread(twitterPessoa, sizeof(char), 15, arquivoPessoa);
+
+                printf("Dados da pessoa de código %d\n", idPessoa);
+
+                if(nomePessoa[0] != '\0')
+                    printf("Nome: %s\n", nomePessoa);
+                else
+                    printf("Nome: -\n");              
+
+                if(idadePessoa != -1)
+                    printf("Idade: %d anos\n", idadePessoa);
+                else
+                    printf("Idade: -\n");
+
+                printf("Twitter: %s\n", twitterPessoa);
+
+                printf("\n");
+            }    
+
+            fclose(arquivoIndexaPessoa);
+            fclose(arquivoPessoa);
+        }
 
     } else if (caso == 4) {
         
