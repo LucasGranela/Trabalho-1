@@ -10,6 +10,16 @@
 
 /home/lucas.granela/Documents/ED3/Trabalho 1/funcoes-fornecidas/fornecido.h
 
+/home/lucas.granela/Documents/ED3/Trabalho 1/funcoesUtilizadas.c
+funcoesUtilizadas.h
+/home/lucas.granela/Documents/ED3/Trabalho 1/funcoesUtilizadas.h
+
+/home/lucas.granela/Documents/ED3/Trabalho 1/funcoesUtilizadas.h
+stdio.h
+-
+stdlib.h
+-
+
 /home/lucas.granela/Documents/ED3/Trabalho 1/main.c
 stdio.h
 -
@@ -21,4 +31,6 @@ arqIndicePessoa.h
 /home/lucas.granela/Documents/ED3/Trabalho 1/arqIndicePessoa.h
 funcoes-fornecidas/fornecido.h
 /home/lucas.granela/Documents/ED3/Trabalho 1/funcoes-fornecidas/fornecido.h
+funcoesUtilizadas.h
+/home/lucas.granela/Documents/ED3/Trabalho 1/funcoesUtilizadas.h
 

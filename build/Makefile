@@ -594,6 +594,33 @@ funcoes-fornecidas/fornecido.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/trabalho1.dir/build.make CMakeFiles/trabalho1.dir/funcoes-fornecidas/fornecido.c.s
 .PHONY : funcoes-fornecidas/fornecido.c.s
 
+funcoesUtilizadas.o: funcoesUtilizadas.c.o
+
+.PHONY : funcoesUtilizadas.o
+
+# target to build an object file
+funcoesUtilizadas.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/trabalho1.dir/build.make CMakeFiles/trabalho1.dir/funcoesUtilizadas.c.o
+.PHONY : funcoesUtilizadas.c.o
+
+funcoesUtilizadas.i: funcoesUtilizadas.c.i
+
+.PHONY : funcoesUtilizadas.i
+
+# target to preprocess a source file
+funcoesUtilizadas.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/trabalho1.dir/build.make CMakeFiles/trabalho1.dir/funcoesUtilizadas.c.i
+.PHONY : funcoesUtilizadas.c.i
+
+funcoesUtilizadas.s: funcoesUtilizadas.c.s
+
+.PHONY : funcoesUtilizadas.s
+
+# target to generate assembly for a file
+funcoesUtilizadas.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/trabalho1.dir/build.make CMakeFiles/trabalho1.dir/funcoesUtilizadas.c.s
+.PHONY : funcoesUtilizadas.c.s
+
 main.o: main.c.o
 
 .PHONY : main.o
@@ -667,6 +694,9 @@ help:
 	@echo "... funcoes-fornecidas/fornecido.o"
 	@echo "... funcoes-fornecidas/fornecido.i"
 	@echo "... funcoes-fornecidas/fornecido.s"
+	@echo "... funcoesUtilizadas.o"
+	@echo "... funcoesUtilizadas.i"
+	@echo "... funcoesUtilizadas.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

@@ -4,6 +4,7 @@
 
 #include "arqIndicePessoa.h"
 #include "funcoes-fornecidas/fornecido.h"
+#include "funcoesUtilizadas.h"
 
 
 int main (){
@@ -50,22 +51,6 @@ int main (){
             return 0;
         }
 
-        fseek(arquivoEntrada, 45, SEEK_SET); //posicionando a leitura para depois do cabecalho 
-
-        fseek(arquivoPessoa, 0, SEEK_SET); //posicionando a escrita para escrever o cabecalho
-        
-        //como o fwrite pede um ponteiro foi necessario criar vetores de uma posicao
-        char cabStatus1 = '0';
-        char cablixo1[59];
-        for(i = 0; i < 59; i++)
-            cablixo1[i] = '$';
-        int cab = 0;
-
-        //escrevendo o cabecalho
-        fwrite(&cabStatus1, sizeof(char), 1, arquivoPessoa);
-        fwrite(&cab, sizeof(int), 1, arquivoPessoa);
-        fwrite(cablixo1, sizeof(char), 59, arquivoPessoa);
-
         //variaveis para leitura e escrita das variaveis
         char nomePessoa[60];
         char twitterPessoa[40];
@@ -80,11 +65,14 @@ int main (){
         int RRN;
         int id;
 
-        while(fscanf(arquivoEntrada, "%d%*c", idPessoa) == 1){  //enquanto existir id pessoa, podera continuar a leitura
+        escreveCabcArqPessoa(arquivoPessoa, 0, '0'); //escreve o cabecalho do arquivoPessoa
+        fseek(arquivoEntrada, 45, SEEK_SET); //posicionando a leitura para depois do cabecalho 
+        
+        while(fscanf(arquivoEntrada, "%d%*c", &idPessoa) == 1){  //enquanto existir id pessoa, podera continuar a leitura
             if(fscanf(arquivoEntrada, "%[^,]", nomePessoa) < 1)  //verifica se o nome e' nulo
                 nomePessoa[0] = '\0'; //se for nulo setta como tal 
                 
-            fscanf(arquivoEntrada, "%*c%d%*c%[^\r]", idadePessoa, twitterPessoa); //leitura do resto dos dados
+            fscanf(arquivoEntrada, "%*c%d%*c%[^\r]", &idadePessoa, twitterPessoa); //leitura do resto dos dados
             quantPessoas++; //incrementacao da quantidade de pessoas total para atualizar o cabecalho no final do codigo
 
             int strFinal = 0; // quando for o final da string ele fica um 
@@ -132,16 +120,8 @@ int main (){
             printf("Falha no carregamento do arquivo.\n");
             return 0;
         }
-
-        //criacao do cabecalho
-        char cabStatus2 = '0';
-        char cablixo2[7];
-        for(i = 0; i < 7; i++)
-            cablixo2[i] = '$';
-
-        fseek(arqIndex, 0, SEEK_SET);
-        fwrite(&cabStatus2, 1, 1, arqIndex); //status
-        fwrite(cablixo2, 1, 7, arqIndex); //lixo
+        
+        escreveCabcArqIndexa(arqIndex, '0'); //escreve cabecalho do arquivo
 
         for(i = 1; i <= quantPessoas; i++){
             consulta_lista_pos(li, i, &id, &RRN); //id e RRN vao ficar com os valores corretos
@@ -149,17 +129,9 @@ int main (){
             fwrite(&RRN, sizeof(int), 1, arqIndex);
         }
 
-        //setta no cabecalho a quantidade de pessoas total do arquivo
-        fseek(arquivoPessoa, 1, SEEK_SET);
-        fwrite(&quantPessoas, 4, 1, arquivoPessoa);
-
-        //apos modificado todo o arquivo setta o status do cabecalho para 1 novamente para dizer que ele esta finalizado e consistente
-        cabStatus1 = '1';
-        fseek(arquivoPessoa, 0, SEEK_SET); //cabecalho do arquivo Pessoa
-        fwrite(&cabStatus1, 1, 1, arquivoPessoa);
-        fseek(arqIndex, 0, SEEK_SET); //cabecalho do arquivo IndexaPessoa
-        fwrite(&cabStatus1, 1, 1, arqIndex);
-
+        //setta no cabecalho a quantidade de pessoas total do arquivo e reescreve o cabecalho
+        escreveCabcArqPessoa(arquivoPessoa, quantPessoas, '1');
+        escreveCabcArqIndexa(arqIndex, '1');
 
         //lebera todos os ponteiros criados dinamicamente
         fclose(arqIndex);
@@ -169,6 +141,7 @@ int main (){
         
         //funcao de coleta para verificacao do codigo
         binarioNaTela1(arqPessoa,arqIndPessoa);
+        
     } else if (caso == 2) {
         //leitura do arq binario que sera usado 
         char nomeArqlido[50];
@@ -199,46 +172,17 @@ int main (){
         //posiciona a leitura para depois do cabecalho
         fseek(arqBin, 64, SEEK_SET);
 
-        //variaveis do arquivo
-        int idPessoa;
-        char nomePessoa[40];
-        int idadePessoa;
-        char twitterPessoa[15];
-
         //variavel para saber se o arquivo possui algum dado
         int quantEscritos = 0; 
 
+        //for para percorrer todos os dados
         for(i = 0; i <= quant_dados; i++){
-            fread(&status, sizeof(char), 1, arqBin);
-            if(status == '0') //arquivo logicamente removido
-                fseek(arqBin, 63, SEEK_CUR); //pula ponteiro para proximo dado
-            else {
-                //leitura dos dados do registro existente
-                fread(&idPessoa, sizeof(int), 1, arqBin);
-                fread(nomePessoa, sizeof(char), 40, arqBin);
-                fread(&idadePessoa, sizeof(int), 1, arqBin);
-                fread(twitterPessoa, sizeof(char), 15, arqBin);
-
-                printf("Dados da pessoa de código %d\n", idPessoa);
-
-                if(nomePessoa[0] != '\0')
-                    printf("Nome: %s\n", nomePessoa);
-                else
-                    printf("Nome: -\n");              
-
-                if(idadePessoa != -1)
-                    printf("Idade: %d anos\n", idadePessoa);
-                else
-                    printf("Idade: -\n");
-
-                printf("Twitter: %s\n", twitterPessoa);
-                
+            if(imprimeRegistroNaTela(arqBin)) //escreve o dado na tela
                 quantEscritos++;
-            }
-            if(quantEscritos != 0)
-                printf("\n");
+            else
+                fseek(arqBin, 63, SEEK_CUR); //pula ponteiro para proximo dado
         }
-
+        
         if(quantEscritos == 0)
             printf("Registro inexistente.\n");
 
@@ -287,50 +231,71 @@ int main (){
             scanf("%d", &valor);
 
             int RRN;
+            int id = 0;
             //posiciona o ponteiro do arquivo no id requerido para buscar o RRN certo
-            fseek(arquivoIndexaPessoa, ((valor*8) + 4), SEEK_SET);
-            fread(&RRN, sizeof(int), 1, arquivoIndexaPessoa);
-            
-            //posiciona o ponteiro no arquivo pessoa atraves do RRN obtido para achar os dados corretos
-            fseek(arquivoPessoa, ((RRN+1)*64), SEEK_SET);
+            fseek(arquivoIndexaPessoa, 4, SEEK_SET); //primeiro id
+            //apesar do primeiro id ser com 8 bytes, se somar esse fseek com o do while da os 8 bytes necessarios 
 
-            //variaveis do arquivo
-            char status;
-            int idPessoa;
-            char nomePessoa[40];
-            int idadePessoa;
-            char twitterPessoa[15];
+            while(id < valor){ //passa por todos os id para verificar se ele nao foi excluido
+                fseek(arquivoIndexaPessoa, 4, SEEK_CUR); //pula proximo id - pula o campo do RRN
+                fread(&id, sizeof(int), 1, arquivoIndexaPessoa); //le id
+            } 
 
-            fread(&status, sizeof(char), 1, arquivoPessoa);
-            if(status == '0') //arquivo logicamente removido
+            if(id == valor){
+                //apos verificar a existencia do dado, procura-se o RRN e faz a busca no arquivoPessoa
+                fread(&RRN, sizeof(int), 1, arquivoIndexaPessoa);
+                fseek(arquivoPessoa, ((RRN+1)*64), SEEK_SET);
+                imprimeRegistroNaTela(arquivoPessoa); //imprime o dado na tela
+            } 
+            else
                 printf("Registro inexistente.\n");
-            else {
-                //leitura dos dados do registro existente
-                fread(&idPessoa, sizeof(int), 1, arquivoPessoa);
-                fread(nomePessoa, sizeof(char), 40, arquivoPessoa);
-                fread(&idadePessoa, sizeof(int), 1, arquivoPessoa);
-                fread(twitterPessoa, sizeof(char), 15, arquivoPessoa);
-
-                printf("Dados da pessoa de código %d\n", idPessoa);
-
-                if(nomePessoa[0] != '\0')
-                    printf("Nome: %s\n", nomePessoa);
-                else
-                    printf("Nome: -\n");              
-
-                if(idadePessoa != -1)
-                    printf("Idade: %d anos\n", idadePessoa);
-                else
-                    printf("Idade: -\n");
-
-                printf("Twitter: %s\n", twitterPessoa);
-
-                printf("\n");
-            }    
-
+            
             fclose(arquivoIndexaPessoa);
             fclose(arquivoPessoa);
+
+        } else if (strcmp(campo, "idadePessoa") == 0) {
+            int valor; //verifica a idade requerida para encontrar o campo 
+            scanf("%d", &valor);
+
+            fclose(arquivoIndexaPessoa); //nao sera necessario para esse modo
+
+            int quantRegistros;
+            int i;
+
+            fread(&quantRegistros, 4, 1, arquivoPessoa); //Le a quantidade de Registros do arquvo para o loop
+            
+            fseek(arquivoPessoa, 64, SEEK_SET); //posiciona o ponteiro para dps do cabecalho para comecar o loop
+            
+            int idade;
+            char status;
+            int QuantImprimida = 0;
+
+            for(i = 0; i < quantRegistros; i++){
+                fread(&status, sizeof(char), 1, arquivoPessoa);
+                if(status == '1'){
+                    fseek(arquivoPessoa, 44, SEEK_CUR); //posiciona o ponteiro para ler a idade
+                    fread(&idade, sizeof(int), 1, arquivoPessoa);
+                    
+                    if(idade == valor){ //compara a idade
+                        fseek(arquivoPessoa, -49, SEEK_CUR); //se a idade for igual ele volta para o comeco do registro para imprimir na tela
+                        imprimeRegistroNaTela(arquivoPessoa);
+                        QuantImprimida++;
+                    }
+                    else
+                        fseek(arquivoPessoa, 15, SEEK_CUR); //pula para o proximo registro
+
+                }
+                else {
+                    fseek(arquivoPessoa, 63, SEEK_CUR); //pula para proximo registro
+                    quantRegistros++;                   //aumenta na quantidade o resgistro que nao foi contabilizado
+                }
+            }
+            if(QuantImprimida == 0) //NAO possui nenhum arquivo
+                printf("Registro inexistente.\n");
+
+            fclose(arquivoPessoa);
         }
+        
 
     } else if (caso == 4) {
         

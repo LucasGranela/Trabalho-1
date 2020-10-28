@@ -6,7 +6,11 @@ CMakeFiles/trabalho1.dir/arqIndicePessoa.c.o: ../arqIndicePessoa.h
 
 CMakeFiles/trabalho1.dir/funcoes-fornecidas/fornecido.c.o: ../funcoes-fornecidas/fornecido.c
 
+CMakeFiles/trabalho1.dir/funcoesUtilizadas.c.o: ../funcoesUtilizadas.c
+CMakeFiles/trabalho1.dir/funcoesUtilizadas.c.o: ../funcoesUtilizadas.h
+
 CMakeFiles/trabalho1.dir/main.c.o: ../arqIndicePessoa.h
 CMakeFiles/trabalho1.dir/main.c.o: ../funcoes-fornecidas/fornecido.h
+CMakeFiles/trabalho1.dir/main.c.o: ../funcoesUtilizadas.h
 CMakeFiles/trabalho1.dir/main.c.o: ../main.c
 

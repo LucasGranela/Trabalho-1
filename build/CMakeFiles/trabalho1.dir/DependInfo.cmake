@@ -6,6 +6,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_CHECK_C
   "/home/lucas.granela/Documents/ED3/Trabalho 1/arqIndicePessoa.c" "/home/lucas.granela/Documents/ED3/Trabalho 1/build/CMakeFiles/trabalho1.dir/arqIndicePessoa.c.o"
   "/home/lucas.granela/Documents/ED3/Trabalho 1/funcoes-fornecidas/fornecido.c" "/home/lucas.granela/Documents/ED3/Trabalho 1/build/CMakeFiles/trabalho1.dir/funcoes-fornecidas/fornecido.c.o"
+  "/home/lucas.granela/Documents/ED3/Trabalho 1/funcoesUtilizadas.c" "/home/lucas.granela/Documents/ED3/Trabalho 1/build/CMakeFiles/trabalho1.dir/funcoesUtilizadas.c.o"
   "/home/lucas.granela/Documents/ED3/Trabalho 1/main.c" "/home/lucas.granela/Documents/ED3/Trabalho 1/build/CMakeFiles/trabalho1.dir/main.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
