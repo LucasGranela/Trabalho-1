@@ -63,3 +63,42 @@ void escreveCabcArqIndexa(FILE* arqIndex, char status){
     fwrite(&cabStatus2, 1, 1, arqIndex); //status
     fwrite(cablixo2, 1, 7, arqIndex); //lixo
 }
+
+//insere no arquivo pessoas
+void inserirArqPessoas(int idPessoa, char nomePessoa[60], int idadePessoa, char twitterPessoa[40], FILE* arquivoPessoa){
+    int i;
+    int strFinal = 0; // quando for o final da string ele fica um 
+    for(i = 0; i < 60; i++){ //funcao para identificar e settar o lixo
+        if(strFinal == 1)
+            nomePessoa[i] = '$';
+        else if(nomePessoa[i] == '\0')
+            strFinal = 1;
+        else if(i == 39){ //aqui ele ja prepara a variavel para ser salva no tamanho exato do necessario no arquivo
+            nomePessoa[i] = '\0';
+            strFinal = 1;
+            break;
+        }
+    }
+
+    strFinal = 0; //setando zero de novo para recomecar a verificacao da outra palavra
+    for(i = 0; i < 40; i++){
+        if(strFinal == 1)
+            twitterPessoa[i] = '$';
+        else if(twitterPessoa[i] == '\0')
+            strFinal = 1;
+        else if(i == 14){ //aqui ele ja prepara a variavel para ser salva no tamanho exato do necessario no arquivo
+            twitterPessoa[i] = '\0';
+            strFinal = 1;
+            break;
+        }
+    }
+
+    char removido = '1';
+
+    //aqui escreve todos os dados no arquivoPessoa.bin 
+    fwrite(&removido, sizeof(char), 1, arquivoPessoa);
+    fwrite(&idPessoa, 4, 1, arquivoPessoa);
+    fwrite(nomePessoa, sizeof(char), 40, arquivoPessoa);
+    fwrite(&idadePessoa, 4, 1, arquivoPessoa);
+    fwrite(twitterPessoa, sizeof(char), 15, arquivoPessoa);
+}

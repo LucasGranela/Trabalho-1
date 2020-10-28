@@ -74,40 +74,10 @@ int main (){
                 
             fscanf(arquivoEntrada, "%*c%d%*c%[^\r]", &idadePessoa, twitterPessoa); //leitura do resto dos dados
             quantPessoas++; //incrementacao da quantidade de pessoas total para atualizar o cabecalho no final do codigo
-
-            int strFinal = 0; // quando for o final da string ele fica um 
-            for(i = 0; i < 60; i++){ //funcao para identificar e settar o lixo
-                if(strFinal == 1)
-                    nomePessoa[i] = '$';
-                else if(nomePessoa[i] == '\0')
-                    strFinal = 1;
-                else if(i == 39){ //aqui ele ja prepara a variavel para ser salva no tamanho exato do necessario no arquivo
-                    nomePessoa[i] = '\0';
-                    strFinal = 1;
-                    break;
-                }
-            }
-
-            strFinal = 0; //setando zero de novo para recomecar a verificacao da outra palavra
-            for(i = 0; i < 40; i++){
-                if(strFinal == 1)
-                    twitterPessoa[i] = '$';
-                else if(twitterPessoa[i] == '\0')
-                    strFinal = 1;
-                else if(i == 14){ //aqui ele ja prepara a variavel para ser salva no tamanho exato do necessario no arquivo
-                    twitterPessoa[i] = '\0';
-                    strFinal = 1;
-                    break;
-                }
-            }
-
-            //aqui escreve todos os dados no arquivoPessoa.bin 
-            fwrite(&removido, sizeof(char), 1, arquivoPessoa);
-            fwrite(&idPessoa, 4, 1, arquivoPessoa);
-            fwrite(nomePessoa, sizeof(char), 40, arquivoPessoa);
-            fwrite(&idadePessoa, 4, 1, arquivoPessoa);
-            fwrite(twitterPessoa, sizeof(char), 15, arquivoPessoa);
-
+            
+            //insere os registros no arquivo pessoas
+            inserirArqPessoas(idPessoa, nomePessoa, idadePessoa, twitterPessoa, arquivoPessoa);
+            
             //cria a lista dinamicamente ordenada dos index
             RRN = quantPessoas - 1;
             id = idPessoa;
