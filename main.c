@@ -21,7 +21,7 @@ int main (){
     *   caso 5: atualizacao dos campos 
     */
 
-    int caso;
+    int caso, i;
     
     scanf("%d%*c", &caso);
     
@@ -34,8 +34,6 @@ int main (){
         char arqPessoa[50];
         char arqIndPessoa[50];
         
-        int i;
-
         //leitura dos arquivos a serem lidos
         scanf("%[^ ]%*c", nomeArquivolido);
         scanf("%[^ ]%*c", arqPessoa);
@@ -116,7 +114,7 @@ int main (){
         //leitura do arq binario que sera usado 
         char nomeArqlido[50];
         scanf("%s", nomeArqlido);
-        int i; //utilizacao em for
+         //utilizacao em for
 
         FILE* arqBin = fopen(nomeArqlido, "rb");
         if(arqBin == NULL){ //verifica se o programa conseguiu abrir
@@ -230,8 +228,7 @@ int main (){
             fclose(arquivoIndexaPessoa); //nao sera necessario para esse modo
 
             int quantRegistros;
-            int i;
-
+            
             fread(&quantRegistros, 4, 1, arquivoPessoa); //Le a quantidade de Registros do arquvo para o loop
             
             fseek(arquivoPessoa, 64, SEEK_SET); //posiciona o ponteiro para dps do cabecalho para comecar o loop
@@ -268,7 +265,119 @@ int main (){
         
 
     } else if (caso == 4) {
+        //variaveis dos arquivos e o campo a ser utilizado
+        char nomeArqPessoa[50];
+        char nomeArqIndex[50];
+        int quantRegistros; //idPessoa,nomePessoa,idadePessoa ou twitterPessoa
+
+        //leitura das variaveis 
+        scanf("%[^ ]%*c", nomeArqPessoa);
+        scanf("%[^ ]%*c", nomeArqIndex);
+        scanf("%d", &quantRegistros);
+
+        //vai abrir os dois arquivos necessarios e verificar se eles estao de acordo com o necessario
+        FILE* arquivoPessoa = fopen(nomeArqPessoa, "rb+");      //pode escrever em qualquer lugar do arquivo
+        FILE* arquivoIndexaPessoa = fopen(nomeArqIndex, "rb");  //leitura completa do arquivo
+
+        //verifica se existe um arquivo e se ele abre corretamente
+        if(arquivoPessoa == NULL || arquivoIndexaPessoa == NULL){
+            printf("Falha no carregamento do arquivo.\n");
+            return 0;
+        }
+
+        //verifica se o arquivo esta consistente para continuar o programa
+        char statusPessoa;
+        char statusIndexaPessoa;
+        fseek(arquivoPessoa, 0, SEEK_SET);
+        fread(&statusPessoa, sizeof(char), 1, arquivoPessoa);
+        fseek(arquivoIndexaPessoa, 0, SEEK_SET);
+        fread(&statusIndexaPessoa, sizeof(char), 1, arquivoIndexaPessoa);
+
+        //fecha os arquivos antes do encerramento do programa
+        if(statusPessoa == '0' || statusIndexaPessoa == '0'){
+            printf("Falha no carregamento do arquivo.\n");
+            fclose(arquivoIndexaPessoa);
+            fclose(arquivoPessoa);
+            return 0;
+        }
+
+        //lista dinamica salva na memoria para manuseio do arquivo
+        Lista* li = cria_lista();
+        int RRN;
+        int id;
+
+        fseek(arquivoIndexaPessoa, 8, SEEK_SET);
+
+        //leitura do arquivo Index, como nao foi aberto para escrita, nao e' necessario mudar o status do mesmo
+        while(fread(&id, 4, 1, arquivoIndexaPessoa) == 1){
+            fread(&RRN, 4, 1, arquivoIndexaPessoa);
+            insere_lista_ordenada(li, RRN, id);
+        }
+
+        fclose(arquivoIndexaPessoa); //como ja foi salvo todo o arquivo, podemos fechalo para criar um novo arquivo mais tarde
+
+        //variaveis para insersao no arquivo
+        char nomePessoa[60];
+        char twitterPessoa[40];
+        char removido = '1';
+        int idPessoa, idadePessoa;
+
+        //muda o status do arquivo para inconsistente 
+        statusPessoa = '0';
+        fseek(arquivoPessoa, 0, SEEK_SET);
+        fwrite(&statusPessoa, 1, 1, arquivoPessoa);
+
+        //verifica quantas pessoas tem ate o final do arquivo -- RRN
+        //como alguem pode ter sido removido do arquivo, nao podemos confia na quantidade de pessoas para fazer o calculo do RRN        
+        long int byteoffset;
         
+        //posicionando o vetor no final do arquivo para comecar a escrever nele e obter o byteoffset
+        fseek(arquivoPessoa, 0, SEEK_END);        
+
+        byteoffset = ftell(arquivoPessoa);
+
+        RRN = ((byteoffset)/64) - 1; 
+
+        //insercao na lista e no arquivo
+        for(i = 0; i < quantRegistros; i++){
+            scanf("%d%*c", &idPessoa);
+            scan_quote_string(nomePessoa);
+            scanf("%d%*c%[^\n]", &idadePessoa, twitterPessoa);
+
+            inserirArqPessoas(idPessoa, nomePessoa, idadePessoa, twitterPessoa, arquivoPessoa);
+
+            insere_lista_ordenada(li, RRN, idPessoa);
+            
+            RRN++;
+        }
+
+        //criacao de um novo arquivo IndexaPessoa 
+        FILE* arquivoIndexa = fopen(nomeArqIndex, "wb"); 
+        if(arquivoIndexa == NULL){
+            printf("Falha no carregamento do arquivo.\n");
+            return 0;
+        }
+
+        escreveCabcArqIndexa(arquivoIndexa, '0');
+
+        int quantPessoas = RRN;
+
+        //escreve na lista index
+        for(i = 1; i <= quantPessoas; i++){
+            consulta_lista_pos(li, i, &id, &RRN); //id e RRN vao ficar com os valores corretos
+            fwrite(&id, sizeof(int), 1, arquivoIndexa);
+            fwrite(&RRN, sizeof(int), 1, arquivoIndexa);
+        }
+
+        //finaliza escrevendo nos arquivos
+        escreveCabcArqIndexa(arquivoIndexa, '1');
+        escreveCabcArqPessoa(arquivoPessoa, quantPessoas, '1');
+
+        //fecha os arquivos
+        fclose(arquivoPessoa);
+        fclose(arquivoIndexa);
+
+        binarioNaTela1(nomeArqPessoa, nomeArqIndex);
     } else if (caso == 5) {
 
     } else {
