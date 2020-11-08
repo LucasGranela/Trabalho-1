@@ -53,13 +53,13 @@ int consulta_lista_pos(Lista* li, int pos, int *id, int *rrn ) {
     }
 }
 
-int consulta_lista_idPessoa(Lista* li, int dt, Elem **el) {
+int consulta_lista_id(Lista* li, int id, Elem **el) {
     if (li == NULL)
         return 0;
 
     Elem *no = *li;
 
-    while (no != NULL && no->idPessoa != dt){
+    while (no != NULL && no->idPessoa != id){
         no = no->prox;
     }
 

@@ -6,21 +6,7 @@
 #include "funcoes-fornecidas/fornecido.h"
 #include "funcoesUtilizadas.h"
 
-
 int main (){
-    /*
-    * O programa possui 5 tipos de entrada: 
-    *   caso 1: ler arquivos em formato csv e gravar em arquivos de dados de saida 
-    *   
-    *   caso 2: recuperar os dados do arquivo pessoa e mostrar de forma organizada
-    * 
-    *   caso 3: busca por determinado usuario
-    *   
-    *   caso 4: insercao de registro adicionais
-    * 
-    *   caso 5: atualizacao dos campos 
-    */
-
     int caso, i;
     
     scanf("%d%*c", &caso);
@@ -123,15 +109,8 @@ int main (){
         }
 
         //leitura do status para verificar se o arquivo esta consistente para continuar o codigo
-        char status;
-        fseek(arqBin, 0, SEEK_SET);
-        fread(&status, sizeof(char), 1, arqBin);
-
-        if(status == '0'){
-            printf("Falha no carregamento do arquivo.\n");
-            fclose(arqBin);
+        if(!verificaConsistencia(arqBin))
             return 0;
-        }
 
         //leitura e armazenamento da quantidade de dados que o arquivo possui
         int quant_dados;
@@ -177,41 +156,14 @@ int main (){
             return 0;
         }
 
-        //verifica se o arquivo esta consistente para ser lido
-        char statusPessoa;
-        char statusIndexaPessoa;
-        fseek(arquivoPessoa, 0, SEEK_SET);
-        fread(&statusPessoa, sizeof(char), 1, arquivoPessoa);
-        fseek(arquivoIndexaPessoa, 0, SEEK_SET);
-        fread(&statusIndexaPessoa, sizeof(char), 1, arquivoIndexaPessoa);
-
-        //fecha os arquivos antes do encerramento do programa
-        if(statusPessoa == '0' || statusIndexaPessoa == '0'){
-            printf("Falha no carregamento do arquivo.\n");
-            fclose(arquivoIndexaPessoa);
-            fclose(arquivoPessoa);
+        if(!verificaConsistencia(arquivoIndexaPessoa) || !verificaConsistencia(arquivoPessoa))
             return 0;
-        }
 
         //de novo, queria usar o switch case, mas parece que o compilador nao compila direito entao fiz com if else
         if(strcmp(campo, "idPessoa") == 0) {//verifica se o campo escolhido e' o do idPessoa
-            int valor; //verifica o id requerido para encontrar o campo 
-            scanf("%d", &valor);
+            int RRN = retornaRRN(arquivoIndexaPessoa);
 
-            int RRN;
-            int id = 0;
-            //posiciona o ponteiro do arquivo no id requerido para buscar o RRN certo
-            fseek(arquivoIndexaPessoa, 4, SEEK_SET); //primeiro id
-            //apesar do primeiro id ser com 8 bytes, se somar esse fseek com o do while da os 8 bytes necessarios 
-
-            while(id < valor){ //passa por todos os id para verificar se ele nao foi excluido
-                fseek(arquivoIndexaPessoa, 4, SEEK_CUR); //pula proximo id - pula o campo do RRN
-                fread(&id, sizeof(int), 1, arquivoIndexaPessoa); //le id
-            } 
-
-            if(id == valor){
-                //apos verificar a existencia do dado, procura-se o RRN e faz a busca no arquivoPessoa
-                fread(&RRN, sizeof(int), 1, arquivoIndexaPessoa);
+            if(RRN != -1){
                 fseek(arquivoPessoa, ((RRN+1)*64), SEEK_SET);
                 imprimeRegistroNaTela(arquivoPessoa); //imprime o dado na tela
             } 
@@ -261,9 +213,76 @@ int main (){
                 printf("Registro inexistente.\n");
 
             fclose(arquivoPessoa);
-        }
-        
+        } else if (strcmp(campo, "nomePessoa") == 0) {
+            char valor[60];
 
+            scan_quote_string(valor);
+
+            char nomePessoa[40];
+            char status;
+            int QuantImprimida = 0;
+
+            fseek(arquivoPessoa, 64, SEEK_SET); //posiciona para o primeiro nome presente no arquivo
+
+            while(fread(status, 1, 1, arquivoPessoa) == 1){
+                if(status == '0'){
+                    fseek(arquivoPessoa, 63, SEEK_CUR); // pula para o proximo registro
+                    continue;
+                }
+                    
+                fseek(arquivoPessoa, 4, SEEK_CUR);
+
+                fread(nomePessoa, 1, 40, arquivoPessoa);
+
+                if(strcmp(nomePessoa, valor) == 0){ //compara a idade
+                        fseek(arquivoPessoa, -45, SEEK_CUR); //se o nome for igual ele volta para o comeco do registro para imprimir na tela
+                        imprimeRegistroNaTela(arquivoPessoa);
+                        QuantImprimida++;
+                    }
+                else
+                    fseek(arquivoPessoa, 19, SEEK_CUR); //pula para o proximo registro
+
+            }
+            if(QuantImprimida == 0) //NAO possui nenhum arquivo
+                printf("Registro inexistente.\n");
+
+            fclose(arquivoPessoa);
+
+        } else if (strcmp(campo, "twitterPessoa") == 0){
+            char valor[40];
+
+            scan_quote_string(valor);
+
+            char twitterPessoa[15];
+            char status;
+            int QuantImprimida = 0;
+
+            fseek(arquivoPessoa, 64, SEEK_SET); //posiciona para o primeiro nome presente no arquivo
+
+            while(fread(status, 1, 1, arquivoPessoa) == 1){
+                if(status == '0'){
+                    fseek(arquivoPessoa, 63, SEEK_CUR); // pula para o proximo registro
+                    continue;
+                }
+                    
+                fseek(arquivoPessoa, 48, SEEK_CUR);
+
+                fread(twitterPessoa, 1, 15, arquivoPessoa);
+
+                if(strcmp(twitterPessoa, valor) == 0){ //compara a idade
+                        fseek(arquivoPessoa, -64, SEEK_CUR); //se o nome for igual ele volta para o comeco do registro para imprimir na tela
+                        imprimeRegistroNaTela(arquivoPessoa);
+                        QuantImprimida++;
+                    }
+                else
+                    continue; //pula para o proximo registro
+
+            }
+            if(QuantImprimida == 0) //NAO possui nenhum arquivo
+                printf("Registro inexistente.\n");
+
+            fclose(arquivoPessoa);
+        }
     } else if (caso == 4) {
         //variaveis dos arquivos e o campo a ser utilizado
         char nomeArqPessoa[50];
@@ -285,21 +304,9 @@ int main (){
             return 0;
         }
 
-        //verifica se o arquivo esta consistente para continuar o programa
-        char statusPessoa;
-        char statusIndexaPessoa;
-        fseek(arquivoPessoa, 0, SEEK_SET);
-        fread(&statusPessoa, sizeof(char), 1, arquivoPessoa);
-        fseek(arquivoIndexaPessoa, 0, SEEK_SET);
-        fread(&statusIndexaPessoa, sizeof(char), 1, arquivoIndexaPessoa);
-
-        //fecha os arquivos antes do encerramento do programa
-        if(statusPessoa == '0' || statusIndexaPessoa == '0'){
-            printf("Falha no carregamento do arquivo.\n");
-            fclose(arquivoIndexaPessoa);
-            fclose(arquivoPessoa);
+        //se retornar 0, termina o codigo
+        if(!verificaConsistencia(arquivoIndexaPessoa) || !verificaConsistencia(arquivoPessoa))
             return 0;
-        }
 
         //lista dinamica salva na memoria para manuseio do arquivo
         Lista* li = cria_lista();
@@ -323,7 +330,7 @@ int main (){
         int idPessoa, idadePessoa;
 
         //muda o status do arquivo para inconsistente 
-        statusPessoa = '0';
+        char statusPessoa = '0';
         fseek(arquivoPessoa, 0, SEEK_SET);
         fwrite(&statusPessoa, 1, 1, arquivoPessoa);
 
@@ -376,9 +383,164 @@ int main (){
         //fecha os arquivos
         fclose(arquivoPessoa);
         fclose(arquivoIndexa);
+        libera_lista(li);
 
         binarioNaTela1(nomeArqPessoa, nomeArqIndex);
     } else if (caso == 5) {
+
+        //variaveis dos arquivos e o campo a ser utilizado
+        char nomeArqPessoa[50];
+        char nomeArqIndex[50];
+        int quantRegistros; //quantidade de vezes que editaremos registros 
+
+        //leitura das variaveis 
+        scanf("%[^ ]%*c", nomeArqPessoa);
+        scanf("%[^ ]%*c", nomeArqIndex);
+        scanf("%d", &quantRegistros);
+
+        //vai abrir os dois arquivos necessarios e verificar se eles estao de acordo com o necessario
+        FILE* arquivoPessoa = fopen(nomeArqPessoa, "rb+");      //pode escrever em qualquer lugar do arquivo
+        FILE* arquivoIndexaPessoa = fopen(nomeArqIndex, "rb");  //leitura completa do arquivo
+
+        //verifica se existe um arquivo e se ele abre corretamente
+        if(arquivoPessoa == NULL || arquivoIndexaPessoa == NULL){
+            printf("Falha no carregamento do arquivo.\n");
+            return 0;
+        }
+
+        //verifica consistencia do arquivo
+        if(!verificaConsistencia(arquivoIndexaPessoa) || !verificaConsistencia(arquivoPessoa))
+            return 0;
+
+        //lista dinamica salva na memoria para manuseio do arquivo
+        Lista* li = cria_lista();
+        int RRN;
+        int id;
+
+        fseek(arquivoIndexaPessoa, 8, SEEK_SET);
+
+        //leitura do arquivo Index, como nao foi aberto para escrita, nao e' necessario mudar o status do mesmo
+        while(fread(&id, 4, 1, arquivoIndexaPessoa) == 1){
+            fread(&RRN, 4, 1, arquivoIndexaPessoa);
+            insere_lista_ordenada(li, RRN, id);
+        }
+        //fechamos o arquivo para utilizarmos mais tarde 
+        fclose(arquivoIndexaPessoa);
+
+        char nomeCampo[15];
+        char nomeCampoTroca[15];
+        int quantTroca;
+        int j;
+        Elem *element;
+
+        int quantDeRegistros;
+        char status;
+        fread(&status, 1, 1, arquivoPessoa);
+        fread(&quantDeRegistros, 4, 1, arquivoPessoa);
+
+        escreveCabcArqPessoa(arquivoPessoa,quantDeRegistros, '0');
+
+        //comeco do codigo apos os preparativos
+        for(i = 0; i < quantRegistros; i++){
+            scanf("%[^ ]%*c", nomeCampo);
+            if(strcmp(nomeCampo, "idPessoa") == 0){
+                scanf("%d", &id);
+
+                if(consulta_lista_id(li, id, element)){
+                    int rrn = element->RRN;
+                    scanf("%*c%d%*c", &quantTroca);
+                    
+                    for(j = 0; j < quantTroca; j++){
+                        scanf("%[^ ]%*c", nomeCampoTroca);
+                        if(strcmp(nomeCampo, "idPessoa") == 0){
+                            int idATrocar;
+                            
+                            scanf("%d", &idATrocar);
+
+                            fseek(arquivoPessoa, (((rrn+1)*64)+ 1), SEEK_SET); //posiciona corretamente no id a ser reescrito
+
+                            fwrite(&idATrocar, 4, 1, arquivoPessoa);
+
+                            remove_lista(li, id);
+
+                            insere_lista_ordenada(li, rrn, idATrocar);
+
+                        } else if(strcmp(nomeCampo, "nomePessoa") == 0) {
+                            char nome[40];
+
+                            scanf("%s", nome);
+
+                            fseek(arquivoPessoa, (((rrn+1)*64)+ 5), SEEK_SET); //posiciona corretamente no nome a ser reescrito
+                            
+                            int i;
+                            int strFinal = 0;
+
+                            for(i = 0; i < 60; i++){ //funcao para identificar e settar o lixo
+                                if(strFinal == 1)
+                                    nome[i] = '$';
+                                else if(nome[i] == '\0')
+                                    strFinal = 1;
+                                else if(i == 39){ //aqui ele ja prepara a variavel para ser salva no tamanho exato do necessario no arquivo
+                                    nome[i] = '\0';
+                                    strFinal = 1;
+                                    break;
+                                }
+                            }
+
+                            fwrite(nome, 1, 40, arquivoPessoa);
+                            
+                        } else if(strcmp(nomeCampo, "idadePessoa") == 0) {
+                            int idade;
+                            
+                            scanf("%d", &idade);
+
+                            fseek(arquivoPessoa, (((rrn+1)*64)+ 45), SEEK_SET); //posiciona corretamente no id a ser reescrito
+
+                            fwrite(&idade, 4, 1, arquivoPessoa);
+
+                        } else if(strcmp(nomeCampo, "twitterPessoa") == 0) {
+                            char twitter[40];
+
+                            scanf("%s", twitter);
+
+                            fseek(arquivoPessoa, (((rrn+1)*64)+ 49), SEEK_SET); //posiciona corretamente no twitter a ser reescrito
+                            
+                            int i;
+                            int strFinal = 0;
+
+                            for(i = 0; i < 40; i++){ //funcao para identificar e settar o lixo
+                                if(strFinal == 1)
+                                    twitter[i] = '$';
+                                else if(twitter[i] == '\0')
+                                    strFinal = 1;
+                                else if(i == 14){ //aqui ele ja prepara a variavel para ser salva no tamanho exato do necessario no arquivo
+                                    twitter[i] = '\0';
+                                    strFinal = 1;
+                                    break;
+                                }
+                            }
+
+                            fwrite(twitter, 1, 15, arquivoPessoa);
+                        }
+                        scanf("%*c");
+                    }
+                }
+                else
+                printf("Registro inexistente.\n");
+
+            } else if(strcmp(nomeCampo, "nomePessoa") == 0) {
+                char nome[40];
+            } else if(strcmp(nomeCampo, "idadePessoa") == 0) {
+                int idade;
+            } else if(strcmp(nomeCampo, "twitterPessoa") == 0) {
+                char twitter[15];
+            }            
+        }
+
+
+        libera_lista(li);
+        fclose(arquivoIndexaPessoa);
+        fclose(arquivoPessoa);
 
     } else {
 

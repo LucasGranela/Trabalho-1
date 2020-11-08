@@ -102,3 +102,45 @@ void inserirArqPessoas(int idPessoa, char nomePessoa[60], int idadePessoa, char 
     fwrite(&idadePessoa, 4, 1, arquivoPessoa);
     fwrite(twitterPessoa, sizeof(char), 15, arquivoPessoa);
 }
+
+int verificaConsistencia(FILE* arquivo){ //se tiver consistente retorna 1, se nao 0
+    //verifica se o arquivo esta consistente para continuar o programa
+    char statusArquivo;
+    fseek(arquivo, 0, SEEK_SET);
+    fread(&statusArquivo, sizeof(char), 1, arquivo);
+    fseek(arquivo, 0, SEEK_SET);
+    fread(&statusArquivo, sizeof(char), 1, arquivo);
+
+    //fecha os arquivos antes do encerramento do programa
+    if(statusArquivo == '0'){
+        printf("Falha no carregamento do arquivo.\n");
+        fclose(arquivo);
+        return 0;
+    }
+
+    return 1;
+}
+
+int retornaRRN(FILE* arquivo){ //retorna o RRN do id achado
+    int valor; //verifica o id requerido para encontrar o campo 
+    scanf("%d", &valor);
+
+    int RRN;
+    int id = 0;
+
+    //posiciona o ponteiro do arquivo no id requerido para buscar o RRN certo
+    fseek(arquivo, 4, SEEK_SET); //primeiro id
+    //apesar do primeiro id ser com 8 bytes, se somar esse fseek com o do while da os 8 bytes necessarios 
+
+    while(id < valor){ //passa por todos os id para verificar se ele nao foi excluido
+        fseek(arquivo, 4, SEEK_CUR); //pula proximo id - pula o campo do RRN
+        fread(&id, sizeof(int), 1, arquivo); //le id
+    }
+    if(id == valor){
+        //apos verificar a existencia do dado, procura-se o RRN e faz a busca no arquivoPessoa
+        fread(&RRN, sizeof(int), 1, arquivo);
+        return RRN;
+    } 
+    
+    return -1; //se retornar -1,nao encontrou o id
+}
