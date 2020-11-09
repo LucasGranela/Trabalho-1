@@ -224,7 +224,7 @@ int main (){
 
             fseek(arquivoPessoa, 64, SEEK_SET); //posiciona para o primeiro nome presente no arquivo
 
-            while(fread(status, 1, 1, arquivoPessoa) == 1){
+            while(fread(&status, 1, 1, arquivoPessoa) == 1){
                 if(status == '0'){
                     fseek(arquivoPessoa, 63, SEEK_CUR); // pula para o proximo registro
                     continue;
@@ -259,7 +259,7 @@ int main (){
 
             fseek(arquivoPessoa, 64, SEEK_SET); //posiciona para o primeiro nome presente no arquivo
 
-            while(fread(status, 1, 1, arquivoPessoa) == 1){
+            while(fread(&status, 1, 1, arquivoPessoa) == 1){
                 if(status == '0'){
                     fseek(arquivoPessoa, 63, SEEK_CUR); // pula para o proximo registro
                     continue;
@@ -446,7 +446,7 @@ int main (){
             if(strcmp(nomeCampo, "idPessoa") == 0){
                 scanf("%d", &id);
 
-                if(consulta_lista_id(li, id, element)){
+                if(consulta_lista_id(li, id, &element)){
                     int rrn = element->RRN;
                     scanf("%*c%d%*c", &quantTroca);
                     
@@ -466,22 +466,22 @@ int main (){
                             insere_lista_ordenada(li, rrn, idATrocar);
 
                         } else if(strcmp(nomeCampo, "nomePessoa") == 0) {
-                            char nome[40];
+                            char nome[60];
 
                             scanf("%s", nome);
 
                             fseek(arquivoPessoa, (((rrn+1)*64)+ 5), SEEK_SET); //posiciona corretamente no nome a ser reescrito
                             
-                            int i;
+                            int k;
                             int strFinal = 0;
 
-                            for(i = 0; i < 60; i++){ //funcao para identificar e settar o lixo
+                            for(k = 0; k < 60; k++){ //funcao para identificar e settar o lixo
                                 if(strFinal == 1)
-                                    nome[i] = '$';
-                                else if(nome[i] == '\0')
+                                    nome[k] = '$';
+                                else if(nome[k] == '\0')
                                     strFinal = 1;
-                                else if(i == 39){ //aqui ele ja prepara a variavel para ser salva no tamanho exato do necessario no arquivo
-                                    nome[i] = '\0';
+                                else if(k == 39){ //aqui ele ja prepara a variavel para ser salva no tamanho exato do necessario no arquivo
+                                    nome[k] = '\0';
                                     strFinal = 1;
                                     break;
                                 }
@@ -504,17 +504,17 @@ int main (){
                             scanf("%s", twitter);
 
                             fseek(arquivoPessoa, (((rrn+1)*64)+ 49), SEEK_SET); //posiciona corretamente no twitter a ser reescrito
-                            
-                            int i;
+
+                            int k;
                             int strFinal = 0;
 
-                            for(i = 0; i < 40; i++){ //funcao para identificar e settar o lixo
+                            for(k = 0; k < 40; k++){ //funcao para identificar e settar o lixo
                                 if(strFinal == 1)
-                                    twitter[i] = '$';
-                                else if(twitter[i] == '\0')
+                                    twitter[k] = '$';
+                                else if(twitter[k] == '\0')
                                     strFinal = 1;
-                                else if(i == 14){ //aqui ele ja prepara a variavel para ser salva no tamanho exato do necessario no arquivo
-                                    twitter[i] = '\0';
+                                else if(k == 14){ //aqui ele ja prepara a variavel para ser salva no tamanho exato do necessario no arquivo
+                                    twitter[k] = '\0';
                                     strFinal = 1;
                                     break;
                                 }
@@ -530,21 +530,369 @@ int main (){
 
             } else if(strcmp(nomeCampo, "nomePessoa") == 0) {
                 char nome[40];
+
+                scan_quote_string(nome);
+
+                char status;
+                char nomePessoa[40];
+
+                fseek(arquivoPessoa, 64, SEEK_SET);
+
+                scanf("%*c%d%*c", &quantTroca);
+                
+                for(j = 0; j < quantTroca; j++){
+                    scanf("%[^ ]%*c", nomeCampoTroca);
+
+                    while(fread(&status, 1, 1, arquivoPessoa) == 1){
+                        if(status == '0')
+                            continue;
+                    
+                        fseek(arquivoPessoa, 4, SEEK_CUR);
+                        fread(nomePessoa, 1, 40, arquivoPessoa);
+                        int rrn = (int)ftell(arquivoIndexaPessoa)/64; 
+
+                        if(strcmp(nomePessoa, nome) == 0){
+                            int idPessoaNovo;
+                            int idPessoa;
+                            scanf("%d", &idPessoaNovo);
+
+                            if(strcmp(nomeCampoTroca, "idPessoa") == 0){
+                                fseek(arquivoPessoa, -44, SEEK_CUR);
+
+                                fread(&idPessoa, 4, 1, arquivoPessoa);
+                                
+                                fseek(arquivoPessoa, -4, SEEK_CUR);
+
+                                fwrite(&idPessoaNovo, 4, 1, arquivoPessoa);
+
+                                remove_lista(li, idPessoa);
+
+                                insere_lista_ordenada(li, rrn, idPessoaNovo);
+
+                                fseek(arquivoIndexaPessoa, 59, SEEK_CUR);
+
+                                break; //para ir para o proximo for
+                            } else if (strcmp(nomeCampoTroca, "nomePessoa") == 0) {
+                                char nomePessoaNovo[60];
+
+                                scan_quote_string(nomePessoaNovo);
+
+                                fseek(arquivoPessoa, -40, SEEK_CUR);
+                                
+                                int k;
+                                int strFinal = 0;
+
+                                for(k = 0; k < 60; k++){ //funcao para identificar e settar o lixo
+                                    if(strFinal == 1)
+                                        nomePessoaNovo[k] = '$';
+                                    else if(nomePessoaNovo[k] == '\0')
+                                        strFinal = 1;
+                                    else if(k == 39){ //aqui ele ja prepara a variavel para ser salva no tamanho exato do necessario no arquivo
+                                        nomePessoaNovo[k] = '\0';
+                                        strFinal = 1;
+                                        break;
+                                    }
+                                }
+                        
+                                fwrite(nomePessoaNovo, 1, 40, arquivoPessoa);
+                                fseek(arquivoPessoa, 19, SEEK_CUR);
+
+                                break;
+                            } else if (strcmp(nomeCampoTroca, "idadePessoa") == 0) {
+                                int idade;
+                            
+                                scanf("%d", &idade);
+
+                                fwrite(&idade, 4, 1, arquivoPessoa);
+                                fseek(arquivoPessoa, 15, SEEK_CUR);
+
+                                break;
+                            } else if(strcmp(nomeCampo, "twitterPessoa") == 0) {
+                                char twitter[40];
+
+                                scanf("%s", twitter);
+
+                                fseek(arquivoPessoa, 4, SEEK_CUR); //posiciona corretamente no twitter a ser reescrito
+
+                                int k;
+                                int strFinal = 0;
+
+                                for(k = 0; k < 40; k++){ //funcao para identificar e settar o lixo
+                                    if(strFinal == 1)
+                                        twitter[k] = '$';
+                                    else if(twitter[k] == '\0')
+                                        strFinal = 1;
+                                    else if(k == 14){ //aqui ele ja prepara a variavel para ser salva no tamanho exato do necessario no arquivo
+                                        twitter[k] = '\0';
+                                        strFinal = 1;
+                                        break;
+                                    }   
+                                }
+
+                                fwrite(twitter, 1, 15, arquivoPessoa);
+                                break;
+                            }
+                            
+                        }
+                    }
+                }
+                
             } else if(strcmp(nomeCampo, "idadePessoa") == 0) {
                 int idade;
+
+                scanf("%*c%d%*c", &idade);
+
+                char status;
+                int verificaIdade;
+
+                fseek(arquivoPessoa, 64, SEEK_SET);
+
+                scanf("%*c%d%*c", &quantTroca);
+                
+                for(j = 0; j < quantTroca; j++){
+                    scanf("%[^ ]%*c", nomeCampoTroca);
+
+                    while(fread(&status, 1, 1, arquivoPessoa) == 1){
+                        if(status == '0')
+                            continue;
+                    
+                        fseek(arquivoPessoa, 44, SEEK_CUR);
+                        fread(&verificaIdade, 1, 40, arquivoPessoa);
+                        int rrn = (int)ftell(arquivoIndexaPessoa)/64; 
+
+                        if(verificaIdade == idade){
+
+                            if(strcmp(nomeCampoTroca, "idPessoa") == 0){
+                                
+                                int idPessoaNovo;
+                                int idPessoa;
+                                scanf("%d", &idPessoaNovo);
+
+                                fseek(arquivoPessoa, -48, SEEK_CUR);
+
+                                fread(&idPessoa, 4, 1, arquivoPessoa);
+                                
+                                fseek(arquivoPessoa, -4, SEEK_CUR);
+
+                                fwrite(&idPessoaNovo, 4, 1, arquivoPessoa);
+
+                                remove_lista(li, idPessoa);
+
+                                insere_lista_ordenada(li, rrn, idPessoaNovo);
+
+                                fseek(arquivoIndexaPessoa, 59, SEEK_CUR);
+
+                                break; //para ir para o proximo for
+                            } else if (strcmp(nomeCampoTroca, "nomePessoa") == 0) {
+                                char nomePessoaNovo[60];
+
+                                scan_quote_string(nomePessoaNovo);
+
+                                fseek(arquivoPessoa, -44, SEEK_CUR);
+                                
+                                int k;
+                                int strFinal = 0;
+
+                                for(k = 0; k < 60; k++){ //funcao para identificar e settar o lixo
+                                    if(strFinal == 1)
+                                        nomePessoaNovo[k] = '$';
+                                    else if(nomePessoaNovo[k] == '\0')
+                                        strFinal = 1;
+                                    else if(k == 39){ //aqui ele ja prepara a variavel para ser salva no tamanho exato do necessario no arquivo
+                                        nomePessoaNovo[k] = '\0';
+                                        strFinal = 1;
+                                        break;
+                                    }
+                                }
+                        
+                                fwrite(nomePessoaNovo, 1, 40, arquivoPessoa);
+                                fseek(arquivoPessoa, 19, SEEK_CUR);
+
+                                break;
+                            } else if (strcmp(nomeCampoTroca, "idadePessoa") == 0) {
+                                int idade;
+                            
+                                scanf("%d", &idade);
+                                fseek(arquivoPessoa, -4, SEEK_CUR);
+
+                                fwrite(&idade, 4, 1, arquivoPessoa);
+                                fseek(arquivoPessoa, 15, SEEK_CUR);
+
+                                break;
+                            } else if(strcmp(nomeCampo, "twitterPessoa") == 0) {
+                                char twitter[40];
+
+                                scanf("%s", twitter);
+
+                                int k;
+                                int strFinal = 0;
+
+                                for(k = 0; k < 40; k++){ //funcao para identificar e settar o lixo
+                                    if(strFinal == 1)
+                                        twitter[k] = '$';
+                                    else if(twitter[k] == '\0')
+                                        strFinal = 1;
+                                    else if(k == 14){ //aqui ele ja prepara a variavel para ser salva no tamanho exato do necessario no arquivo
+                                        twitter[k] = '\0';
+                                        strFinal = 1;
+                                        break;
+                                    }   
+                                }
+
+                                fwrite(twitter, 1, 15, arquivoPessoa);
+                                break;
+                            }
+                            
+                        }
+                    }
+                }
+                
             } else if(strcmp(nomeCampo, "twitterPessoa") == 0) {
                 char twitter[15];
+
+                scan_quote_string(twitter);
+
+                char status;
+                char twitterPessoa[40];
+
+                fseek(arquivoPessoa, 64, SEEK_SET);
+
+                scanf("%*c%d%*c", &quantTroca);
+                
+                for(j = 0; j < quantTroca; j++){
+                    scanf("%[^ ]%*c", nomeCampoTroca);
+
+                    while(fread(&status, 1, 1, arquivoPessoa) == 1){
+                        if(status == '0')
+                            continue;
+                    
+                        fseek(arquivoPessoa, 48, SEEK_CUR);
+                        fread(&twitterPessoa, 1, 15, arquivoPessoa);
+                        int rrn = (int)ftell(arquivoIndexaPessoa)/64; 
+
+                        if(strcmp(twitterPessoa, twitter) == 0){
+
+                            if(strcmp(nomeCampoTroca, "idPessoa") == 0){
+                                
+                                int idPessoaNovo;
+                                int idPessoa;
+                                scanf("%d", &idPessoaNovo);
+
+                                fseek(arquivoPessoa, -63, SEEK_CUR);
+
+                                fread(&idPessoa, 4, 1, arquivoPessoa);
+                                
+                                fseek(arquivoPessoa, -4, SEEK_CUR);
+
+                                fwrite(&idPessoaNovo, 4, 1, arquivoPessoa);
+
+                                remove_lista(li, idPessoa);
+
+                                insere_lista_ordenada(li, rrn, idPessoaNovo);
+
+                                fseek(arquivoIndexaPessoa, 59, SEEK_CUR);
+
+                                break; //para ir para o proximo for
+                            } else if (strcmp(nomeCampoTroca, "nomePessoa") == 0) {
+                                char nomePessoaNovo[60];
+
+                                scan_quote_string(nomePessoaNovo);
+
+                                fseek(arquivoPessoa, -59, SEEK_CUR);
+                                
+                                int k;
+                                int strFinal = 0;
+
+                                for(k = 0; k < 60; k++){ //funcao para identificar e settar o lixo
+                                    if(strFinal == 1)
+                                        nomePessoaNovo[k] = '$';
+                                    else if(nomePessoaNovo[k] == '\0')
+                                        strFinal = 1;
+                                    else if(k == 39){ //aqui ele ja prepara a variavel para ser salva no tamanho exato do necessario no arquivo
+                                        nomePessoaNovo[k] = '\0';
+                                        strFinal = 1;
+                                        break;
+                                    }
+                                }
+                        
+                                fwrite(nomePessoaNovo, 1, 40, arquivoPessoa);
+                                fseek(arquivoPessoa, 19, SEEK_CUR);
+
+                                break;
+                            } else if (strcmp(nomeCampoTroca, "idadePessoa") == 0) {
+                                int idade;
+                            
+                                scanf("%d", &idade);
+                                fseek(arquivoPessoa, -19, SEEK_CUR);
+
+                                fwrite(&idade, 4, 1, arquivoPessoa);
+                                fseek(arquivoPessoa, 15, SEEK_CUR);
+
+                                break;
+                            } else if(strcmp(nomeCampo, "twitterPessoa") == 0) {
+                                char twitter[40];
+
+                                scanf("%s", twitter);
+
+                                int k;
+                                int strFinal = 0;
+
+                                for(k = 0; k < 40; k++){ //funcao para identificar e settar o lixo
+                                    if(strFinal == 1)
+                                        twitter[k] = '$';
+                                    else if(twitter[k] == '\0')
+                                        strFinal = 1;
+                                    else if(k == 14){ //aqui ele ja prepara a variavel para ser salva no tamanho exato do necessario no arquivo
+                                        twitter[k] = '\0';
+                                        strFinal = 1;
+                                        break;
+                                    }   
+                                }
+                                fseek(arquivoPessoa, -15, SEEK_CUR);
+                                fwrite(twitter, 1, 15, arquivoPessoa);
+                                break;
+                            }
+                            
+                        }
+                    }
+                }
+                
+                
             }            
         }
+        FILE* novoArquivoIndexaPessoa = fopen(nomeArqIndex, "wb");
 
+        if(novoArquivoIndexaPessoa == NULL){
+            printf("Falha no carregamento do arquivo.\n");
+            return 0;
+        }
 
-        libera_lista(li);
-        fclose(arquivoIndexaPessoa);
+        escreveCabcArqIndexa(novoArquivoIndexaPessoa, '0');
+
+        fseek(arquivoPessoa, 0, SEEK_END);
+
+        RRN = (ftell(arquivoPessoa)/64);
+
+        int quantPessoas = RRN + 1;
+
+        //escreve na lista index
+        for(i = 1; i <= quantPessoas; i++){
+            consulta_lista_pos(li, i, &id, &RRN); //id e RRN vao ficar com os valores corretos
+            fwrite(&id, sizeof(int), 1, novoArquivoIndexaPessoa);
+            fwrite(&RRN, sizeof(int), 1, novoArquivoIndexaPessoa);
+        }
+
+        //finaliza escrevendo nos arquivos
+        escreveCabcArqIndexa(novoArquivoIndexaPessoa, '1');
+        escreveCabcArqPessoa(arquivoPessoa, quantPessoas, '1');
+
+        //fecha os arquivos
         fclose(arquivoPessoa);
+        fclose(novoArquivoIndexaPessoa);
+        libera_lista(li);
 
-    } else {
-
-    }
+        binarioNaTela1(nomeArqPessoa, nomeArqIndex);
+    } 
 
     return 0;
 }
